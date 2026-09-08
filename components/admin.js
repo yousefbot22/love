@@ -826,6 +826,14 @@ const AdminComponent = {
                     return;
                 }
                 
+                // SoundCloud links are page URLs, not direct MP3 files.
+                // They are supported by the site's official SoundCloud widget.
+                if (/^(https?:\/\/)(www\.)?soundcloud\.com\//i.test(url)) {
+                    testResult.textContent = '✅ رابط SoundCloud صالح للمشغل داخل الموقع';
+                    testResult.style.color = '#2ecc71';
+                    return;
+                }
+
                 testResult.textContent = '⏳ جاري اختبار الرابط...';
                 testResult.style.color = 'var(--text-secondary)';
                 
@@ -840,7 +848,7 @@ const AdminComponent = {
                 });
                 
                 audio.addEventListener('error', () => {
-                    testResult.textContent = '❌ الرابط لا يعمل. تأكد من أنه رابط مباشر لملف MP3';
+                    testResult.textContent = '❌ الرابط لا يعمل. استخدم رابط MP3 مباشر أو رابط SoundCloud صالح.';
                     testResult.style.color = '#e74c3c';
                     audio.src = '';
                 });
