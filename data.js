@@ -73,10 +73,10 @@ const defaultData = {
     // Songs
     songs: [{
         id: 1,
-        name: 'أغنية البداية',
-        artist: 'ذكرياتنا',
+        name: 'أغنية البداية 🎵',
+        artist: 'SoundCloud • ذكرياتنا',
         cover: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        audioUrl: 'https://soundcloud.com/ali-h-al-rubaie-2694222/qm6zdhsvigjl',
         description: 'أول أغنية في قائمتنا'
     }, {
         id: 2,
