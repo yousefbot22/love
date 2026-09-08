@@ -1464,4 +1464,115 @@
         //  MUSIC PLAYER (simple toggle)
         // ============================================================
         function toggleMusic() {
-            i
+            isPlaying = !isPlaying;
+            document.getElementById('homePlayBtn').textContent = isPlaying ? '⏸️' : '▶️';
+            // In production, this would control an audio element
+        }
+
+        // ============================================================
+        //  EVENT BINDINGS
+        // ============================================================
+        function initEvents() {
+            // Nav
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    navigateTo(this.dataset.page);
+                });
+            });
+
+            // Login
+            loginBtn.addEventListener('click', () => login(loginPassword.value));
+            loginPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') login(loginPassword.value);
+            });
+
+            // Admin
+            adminBtn.addEventListener('click', openAdmin);
+
+            // Lightbox
+            document.getElementById('lightboxClose').addEventListener('click', () => {
+                document.getElementById('lightbox').classList.remove('active');
+            });
+            document.getElementById('lightbox').addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+            document.getElementById('lbPrev').addEventListener('click', function() {
+                if (lbIndex > 0) { lbIndex--;
+                    openLightbox(lbIndex); }
+            });
+            document.getElementById('lbNext').addEventListener('click', function() {
+                if (lbIndex < lbItems.length - 1) { lbIndex++;
+                    openLightbox(lbIndex); }
+            });
+
+            // Chat
+            document.getElementById('chatSendBtn').addEventListener('click', () => {
+                const input = document.getElementById('chatInput');
+                sendChatMessage(input.value);
+            });
+            document.getElementById('chatInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const input = document.getElementById('chatInput');
+                    sendChatMessage(input.value);
+                }
+            });
+            document.getElementById('clearChatBtn').addEventListener('click', () => {
+                chatHistory = [];
+                const settings = DATA.chatSettings;
+                chatHistory = [{ role: 'ai', text: settings.welcome }];
+                renderChat();
+            });
+
+            // Music play
+            document.getElementById('homePlayBtn').addEventListener('click', toggleMusic);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('lightbox').classList.remove('active');
+                }
+            });
+        }
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        function init() {
+            createHearts();
+
+            // check auth
+            if (!checkAuth()) {
+                loginOverlay.classList.remove('hidden');
+            } else {
+                adminBtn.style.display = 'inline-block';
+            }
+
+            // seed chat
+            chatHistory = [{ role: 'ai', text: DATA.chatSettings.welcome }];
+
+            // render all
+            renderMemories();
+            renderMessages();
+            renderTimeline();
+            renderMusic();
+            renderChat();
+            updateCounter();
+
+            // start counter interval
+            setInterval(updateCounter, 1000);
+
+            initEvents();
+
+            // navigate to home
+            navigateTo('home');
+
+            console.log('❤️ ذكرياتنا - موقع رومانسي تفاعلي');
+            console.log('📌 كلمة المرور الافتراضية: 123456');
+            console.log('🔐 قم بتغييرها من لوحة التحكم (قريبًا)');
+        }
+
+        // Run
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
