@@ -13,7 +13,8 @@ const AppData = {
         primaryColor: "#ff4d6d",
         background: "",
         startDate: "2026-09-04T00:00:00+03:00",
-        sitePassword: "15122007"
+        sitePassword: "15122007",
+        siteSubtitle: "من بداية قصتنا إلى كل لحظة جميلة عشناها"
     },
 
     memories: [
@@ -68,7 +69,7 @@ const AppData = {
         {
             id: 1,
             emoji: '❤️',
-            description: 'هفضل احبك وجمبك لاخر العمر🥹💕'
+            description: 'بداية قصتنا الجميلة 💕'
         }
     ],
 
@@ -87,22 +88,31 @@ const AppData = {
             artist: 'حوده بندق',
             cover: 'https://imgs.search.brave.com/r7Xz4ajqas2mfjMItkGPOJRpy2dCgmNEq_2WQvJihCY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9w/SGY1b2tSTTlNay9t/YXhyZXNkZWZhdWx0/LmpwZw',
             audioUrl: 'https://soundcloud.com/eslamhussein2006e/houda-khayebt-tawq3atk-1?si=1f5d6c4a69a5453ca64cf42e573e84ce&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
-            description: '.....'
+            description: 'أغنية جميلة جداً'
         },
-   {
+        {
             id: 3,
             name: 'كلمه 🎵',
             artist: 'رامي صبري',
             cover: 'https://imgs.search.brave.com/0uUOvn41jCZNvm7dY4Jd9Xy_jpLEXsfuQ0IiM6m-5HY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9U/LW1XR3NvLXk1RS9t/YXhyZXNkZWZhdWx0/LmpwZw',
             audioUrl: 'https://soundcloud.com/ramysabryfans/ramy-sabry-kelma?si=f72d68244a1a49279ff2ded1fe3481b0&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
-            description: '.....'
-        } ],
+            description: 'أغنية رائعة'
+        },
+        {
+            id: 4,
+            name: 'كل ما نقرب 🎵',
+            artist: 'تامر حسني',
+            cover: 'https://imgs.search.brave.com/qi2HHRYeMiQZhvR0_B5rgf_D-CFdFAGl6xHvclkwmFo/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS8v/T1p2N053S0d2NlEv/bWF4cmVzZGVmYXVs/dC5qcGc',
+            audioUrl: 'https://soundcloud.com/tamerhosnyofficial/kol-man2rb?si=2b8c5e8b3d74462ab1a7dbf43d3bbef4&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
+            description: 'أغنية جميلة جداً'
+        }
+    ],
 
     chatSettings: {
         name: 'ذكرياتنا AI',
         avatar: '❤️',
         welcome: 'أهلًا ❤️ أنا هنا لأسمعك وأتحدث معك. أخبرني كيف تشعر اليوم؟',
-        systemPrompt: 'أنت مساعد لطيف ومتفهم، تتحدث باللغة العربية باللهجة المصرية، وتحب الاستماع ومساعدة المستخدم بطريقة ودودة ومحترمة.',
+        systemPrompt: 'أنت مساعد لطيف ومتفهم، تتحدث باللغة العربية باللهجة المصرية، وتحب الاستماع ومساعدة المستخدم بطريقة ودودة ومحترمة. أنت شريك حياة تحب وتدعم، تقدم كلمات تشجيع وحب. ردودك قصيرة ومؤثرة ومليئة بالمشاعر.',
         language: 'ar'
     }
 };
@@ -149,18 +159,26 @@ const Utils = {
         }
     },
 
-    storage: {
+    formatDateInput: function(date) {
+        if (!date) return "";
+        try {
+            const d = new Date(date);
+            return d.toISOString().slice(0, 16);
+        } catch (e) {
+            return "";
+        }
+    },
 
+    generateId: function() {
+        return Date.now() + Math.random() * 1000;
+    },
+
+    storage: {
         get: function(key, fallback = null) {
             try {
                 const value = localStorage.getItem(key);
-
-                if (value === null) {
-                    return fallback;
-                }
-
+                if (value === null) return fallback;
                 return JSON.parse(value);
-
             } catch (e) {
                 return fallback;
             }
@@ -168,13 +186,8 @@ const Utils = {
 
         set: function(key, value) {
             try {
-                localStorage.setItem(
-                    key,
-                    JSON.stringify(value)
-                );
-
+                localStorage.setItem(key, JSON.stringify(value));
                 return true;
-
             } catch (e) {
                 return false;
             }
@@ -185,6 +198,48 @@ const Utils = {
                 localStorage.removeItem(key);
             } catch (e) {}
         }
+    },
+
+    // Sanitize input (XSS protection)
+    sanitize: function(input) {
+        if (typeof input !== 'string') return input;
+        return input
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    },
+
+    // Validate URL
+    validateUrl: function(url) {
+        try {
+            const u = new URL(url);
+            return ['http:', 'https:'].includes(u.protocol);
+        } catch {
+            return false;
+        }
+    },
+
+    // Truncate text
+    truncate: function(text, maxLength = 100) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    },
+
+    // Debounce
+    debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 };
 
