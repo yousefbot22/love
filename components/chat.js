@@ -1,18 +1,22 @@
 // ============================================================
-// CHAT PAGE COMPONENT - SMART AI WITH DIVERSE RESPONSES
+// CHAT PAGE COMPONENT - WITH API INTEGRATION
 // ============================================================
 
 const ChatComponent = {
     container: null,
     chatHistory: [],
     isTyping: false,
-    responseCache: {},
+    isProcessing: false,
+    currentMessage: '',
+    
+    // API Configuration
+    API_KEY: 'AQ.Ab8RN6If04QzOrJs0ET-hybh2QmKs_LXOqfX-8oHHvJlW71syQ',
+    API_URL: 'https://api.aichat.com/v1/chat', // استخدم الرابط الصحيح
 
     // ============================================================
-    // SMART RESPONSE SYSTEM
+    // LOCAL RESPONSES (fallback when API fails)
     // ============================================================
-    responses: {
-        // Greetings
+    localResponses: {
         greetings: [
             'أهلاً بك! ❤️ كيف يمكنني مساعدتك اليوم؟',
             'مرحباً! 💕 أنا هنا لأسمعك وأتحدث معك.',
@@ -20,16 +24,6 @@ const ChatComponent = {
             'مرحباً بك! ✨ قل لي كيف حالك؟',
             'أهلاً! 💖 أنا هنا لأكون معك دائماً.'
         ],
-        
-        // How are you
-        howAreYou: [
-            'أنا بخير والحمد لله، شكراً لسؤالك! ❤️ كيف حالك أنت؟',
-            'أنا سعيد جداً لأنك سألت! 💕 أتمنى أن تكون بخير أيضاً.',
-            'أنا بخير، وأسعدني سؤالك! 🌸 كيف تقضي يومك؟',
-            'الحمد لله أنا بخير! 💖 أخبرني عن يومك.'
-        ],
-        
-        // Love & Romance
         love: [
             'أنت تضيء حياتي ❤️ كلماتك تملأ قلبي فرحاً.',
             'أحب الاستماع إليك 💕 أنت شخص مميز جداً.',
@@ -37,8 +31,6 @@ const ChatComponent = {
             'أنت أجمل هدية في حياتي 💖 وجودك يسعدني.',
             'حبك يمنحني القوة ❤️ شكراً لأنك هنا.'
         ],
-        
-        // Sad/Support
         support: [
             'أنا هنا لأسمعك 🤗 لا تشعر بالوحدة أبداً.',
             'كل شيء سيكون بخير 💕 أنا بجانبك دائماً.',
@@ -46,8 +38,6 @@ const ChatComponent = {
             'أنت قوي 💪 وستتجاوز هذا بإذن الله.',
             'لا تحزن، الأيام الجميلة قادمة 💖 ثق بذلك.'
         ],
-        
-        // Encouragement
         encouragement: [
             'أنت قادر على فعل أي شيء 💪 ثق بنفسك.',
             'أنا أؤمن بك 🌟 أنت شخص رائع.',
@@ -55,141 +45,17 @@ const ChatComponent = {
             'لا تستسلم أبداً 💖 النجاح قريب منك.',
             'أنت مميز جداً ✨ لا تنسى ذلك أبداً.'
         ],
-        
-        // Questions
-        questions: [
-            'سؤال جميل! ❤️ دعني أفكر فيه قليلاً.',
-            'هذا سؤال عميق 💕 ماذا تعتقد أنت؟',
-            'أحب الأسئلة التي تثير التفكير 🌸 أخبرني رأيك.',
-            'سؤال رائع! 💖 أنا أحب الحديث معك.'
-        ],
-        
-        // Random funny/kind
         random: [
             'ابتسم 😊 فأنت جميل عندما تبتسم.',
             'هل تعلم أنك شخص رائع؟ 💕 لأنك كذلك.',
             'أنا محظوظ لأنني أعرفك 🌸 حقاً.',
             'أنت مميز جداً 💖 لا تنسى ذلك.',
             'الحياة أجمل مع وجودك فيها ✨ شكراً لك.'
-        ],
-        
-        // Farewell
-        farewell: [
-            'كان جميلاً التحدث معك 💕 أراك قريباً.',
-            'إلى اللقاء ❤️ أنتظر عودتك دائماً.',
-            'وداعاً صديقي 💖 كن بخير.',
-            'أتطلع للحديث معك مرة أخرى 🌸 أراك قريباً.',
-            'رحلة سعيدة ✨ أنا هنا عندما تحتاجني.'
         ]
     },
 
     // ============================================================
-    // ANALYZE USER INPUT
-    // ============================================================
-    analyzeInput: function(text) {
-        const lower = text.toLowerCase();
-        
-        // Check for greetings
-        if (/\b(السلام|اهلا|مرحبا|هلا|يا هلا|سلام|صباح|مساء|اهلين)\b/.test(lower)) {
-            return 'greetings';
-        }
-        
-        // Check for how are you
-        if (/\b(كيف حالك|اخبارك|شخبارك|ازيك|كيفك|كيف الحال|عامل ايه)\b/.test(lower)) {
-            return 'howAreYou';
-        }
-        
-        // Check for love/romance
-        if (/\b(حب|قلب|عشق|غرام|حبيبي|حبيبتي|روح|عيون|شوق|وله|هيام)\b/.test(lower)) {
-            return 'love';
-        }
-        
-        // Check for sadness/support
-        if (/\b(حزين|تعبان|زعلان|متضايق|هم|غم|بكاء|دموع|وحيد|وحدة|حزينه)\b/.test(lower)) {
-            return 'support';
-        }
-        
-        // Check for encouragement
-        if (/\b(قادر|اقدر|استطيع|نجاح|انجاز|هدف|طموح|حلم|امل|تفائل)\b/.test(lower)) {
-            return 'encouragement';
-        }
-        
-        // Check for questions
-        if (/\b(؟|هل|ما|ماذا|كيف|لماذا|اين|متى|من|اي|اية)\b/.test(lower)) {
-            return 'questions';
-        }
-        
-        // Check for farewell
-        if (/\b(مع السلامة|باي|وداع|الى اللقاء|سلام|نشوفك|يلا)\b/.test(lower)) {
-            return 'farewell';
-        }
-        
-        // Check for thank you
-        if (/\b(شكرا|تشكر|ممنون|مشكور|متشكر|حمدلله)\b/.test(lower)) {
-            return 'love'; // Use love responses for thanks
-        }
-        
-        // Default: random
-        return 'random';
-    },
-
-    // ============================================================
-    // GET AI RESPONSE
-    // ============================================================
-    getAIResponse: function(text) {
-        const category = this.analyzeInput(text);
-        const responses = this.responses[category] || this.responses.random;
-        
-        // Get a random response from the category
-        const response = responses[Math.floor(Math.random() * responses.length)];
-        
-        // Add personalized touch
-        return this.personalizeResponse(response, text);
-    },
-
-    // ============================================================
-    // PERSONALIZE RESPONSE
-    // ============================================================
-    personalizeResponse: function(response, userText) {
-        // Add user's name if they mention it
-        const nameMatch = userText.match(/اسمي\s+(\w+)/i);
-        if (nameMatch) {
-            return response.replace(/صديقي|حبيبي|أنت/g, nameMatch[1]);
-        }
-        
-        // Add emoji based on mood
-        const mood = this.detectMood(userText);
-        const emojis = {
-            happy: ['😊', '🌟', '✨'],
-            sad: ['💕', '🤗', '🌸'],
-            love: ['❤️', '💖', '💕'],
-            neutral: ['💫', '🌹', '✨']
-        };
-        
-        const moodEmojis = emojis[mood] || emojis.neutral;
-        const emoji = moodEmojis[Math.floor(Math.random() * moodEmojis.length)];
-        
-        // Don't add emoji if response already has one
-        if (response.includes('❤️') || response.includes('💕') || response.includes('🌸')) {
-            return response;
-        }
-        
-        return response + ' ' + emoji;
-    },
-
-    // ============================================================
-    // DETECT MOOD
-    // ============================================================
-    detectMood: function(text) {
-        const lower = text.toLowerCase();
-        if (/\b(حب|قلب|عشق|روح|شوق)\b/.test(lower)) return 'love';
-        if (/\b(حزين|تعبان|زعلان|هم|غم)\b/.test(lower)) return 'sad';
-        if (/\b(سعيد|فرحان|مبسوط|ضحك|مرح)\b/.test(lower)) return 'happy';
-        return 'neutral';
-    },
-
-    // ============================================================
-    // CHAT FUNCTIONS
+    // INIT
     // ============================================================
     init: function() {
         this.container = document.getElementById('page-chat');
@@ -199,6 +65,9 @@ const ChatComponent = {
         this.bindEvents();
     },
 
+    // ============================================================
+    // RENDER
+    // ============================================================
     render: function() {
         const data = window.AppData || AppData;
         const settings = data.chatSettings;
@@ -206,12 +75,16 @@ const ChatComponent = {
         this.container.innerHTML = `
             <div class="section-title">
                 <span class="bar"></span>
-                🤖 شات AI
+                🤖 شات ذكي
             </div>
             <div class="chat-container" id="chatContainer">
                 <div class="chat-header">
                     <div class="chat-avatar">${settings.avatar || '❤️'}</div>
                     <div class="chat-name">${settings.name || 'ذكرياتنا AI'}</div>
+                    <div class="chat-status">
+                        <span class="dot"></span>
+                        <span>متصل</span>
+                    </div>
                     <button class="chat-clear" id="clearChatBtn">
                         <i class="fas fa-trash"></i> مسح
                     </button>
@@ -229,6 +102,9 @@ const ChatComponent = {
         `;
     },
 
+    // ============================================================
+    // RENDER MESSAGES
+    // ============================================================
     renderMessages: function() {
         const data = window.AppData || AppData;
         const settings = data.chatSettings;
@@ -237,30 +113,135 @@ const ChatComponent = {
             <div class="msg ${msg.role === 'user' ? 'user' : 'ai'}">
                 ${msg.role === 'ai' ? `<span style="margin-left:6px;">${settings.avatar || '❤️'}</span>` : ''}
                 ${msg.text}
+                ${msg.role === 'ai' ? `<span style="font-size:0.5rem;color:var(--text-secondary);opacity:0.5;margin-right:8px;">${msg.source === 'api' ? '🤖 AI' : '💭'}</span>` : ''}
             </div>
         `).join('');
     },
 
+    // ============================================================
+    // SEND MESSAGE WITH API
+    // ============================================================
     sendMessage: function(text) {
         if (!text || !text.trim()) return;
-        text = text.trim();
+        if (this.isProcessing) return;
 
+        text = text.trim();
+        this.currentMessage = text;
+
+        // Add user message
         this.chatHistory.push({ role: 'user', text: text });
         this.updateMessages();
 
-        // Show typing indicator
+        // Show typing
         this.showTyping();
+        this.isProcessing = true;
 
-        // Get AI response with delay
-        const delay = 800 + Math.random() * 600;
-        setTimeout(() => {
-            this.hideTyping();
-            const response = this.getAIResponse(text);
-            this.chatHistory.push({ role: 'ai', text: response });
-            this.updateMessages();
-        }, delay);
+        // Try API first
+        this.sendToAPI(text)
+            .then(response => {
+                this.hideTyping();
+                this.chatHistory.push({ 
+                    role: 'ai', 
+                    text: response,
+                    source: 'api'
+                });
+                this.updateMessages();
+                this.isProcessing = false;
+            })
+            .catch(error => {
+                console.warn('API error, using local response:', error);
+                this.hideTyping();
+                // Fallback to local response
+                const fallback = this.getLocalResponse(text);
+                this.chatHistory.push({ 
+                    role: 'ai', 
+                    text: fallback,
+                    source: 'local'
+                });
+                this.updateMessages();
+                this.isProcessing = false;
+                Toast.warning('⚠️ جاري استخدام الردود المحلية المؤقتة');
+            });
     },
 
+    // ============================================================
+    // SEND TO API
+    // ============================================================
+    sendToAPI: function(text) {
+        return new Promise((resolve, reject) => {
+            const data = window.AppData || AppData;
+            const context = this.chatHistory.slice(-6).map(m => 
+                `${m.role === 'user' ? 'المستخدم' : 'المساعد'}: ${m.text}`
+            ).join('\n');
+
+            const payload = {
+                messages: [
+                    { role: 'system', content: data.chatSettings.systemPrompt || 'أنت مساعد لطيف ومتفهم تتحدث بالعربية.' },
+                    ...this.chatHistory.slice(-6).map(m => ({
+                        role: m.role === 'user' ? 'user' : 'assistant',
+                        content: m.text
+                    })),
+                    { role: 'user', content: text }
+                ],
+                temperature: 0.8,
+                max_tokens: 200,
+                stream: false
+            };
+
+            // Use fetch to call API
+            fetch(this.API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.API_KEY}`
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.choices && data.choices[0] && data.choices[0].message) {
+                    resolve(data.choices[0].message.content);
+                } else if (data && data.response) {
+                    resolve(data.response);
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            })
+            .catch(error => {
+                reject(error);
+            });
+        });
+    },
+
+    // ============================================================
+    // LOCAL RESPONSE (fallback)
+    // ============================================================
+    getLocalResponse: function(text) {
+        const lower = text.toLowerCase();
+        let category = 'random';
+
+        if (/\b(السلام|اهلا|مرحبا|هلا|يا هلا|سلام|صباح|مساء|اهلين)\b/.test(lower)) {
+            category = 'greetings';
+        } else if (/\b(حب|قلب|عشق|غرام|حبيبي|حبيبتي|روح|عيون|شوق)\b/.test(lower)) {
+            category = 'love';
+        } else if (/\b(حزين|تعبان|زعلان|متضايق|هم|غم|بكاء|دموع|وحيد|وحدة)\b/.test(lower)) {
+            category = 'support';
+        } else if (/\b(قادر|اقدر|استطيع|نجاح|انجاز|هدف|طموح|حلم|امل|تفائل)\b/.test(lower)) {
+            category = 'encouragement';
+        }
+
+        const responses = this.localResponses[category] || this.localResponses.random;
+        return responses[Math.floor(Math.random() * responses.length)];
+    },
+
+    // ============================================================
+    // UI HELPERS
+    // ============================================================
     showTyping: function() {
         const container = document.getElementById('chatMessages');
         if (!container) return;
@@ -296,8 +277,12 @@ const ChatComponent = {
         const data = window.AppData || AppData;
         this.chatHistory = [{ role: 'ai', text: data.chatSettings.welcome }];
         this.updateMessages();
+        Toast.success('🗑 تم مسح المحادثة');
     },
 
+    // ============================================================
+    // BIND EVENTS
+    // ============================================================
     bindEvents: function() {
         const input = document.getElementById('chatInput');
         const sendBtn = document.getElementById('chatSendBtn');
@@ -315,7 +300,7 @@ const ChatComponent = {
 
         if (input) {
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     const text = input.value;
                     this.sendMessage(text);
