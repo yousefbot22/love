@@ -2,9 +2,8 @@
 // MAIN APPLICATION
 // ============================================================
 
-// Make AppData available globally with save function
+// Make AppData available globally
 window.AppData = AppData;
-window.saveData = saveData;
 
 // Make Utils available globally
 window.Utils = Utils;
@@ -53,54 +52,108 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     function createHearts() {
         const container = document.getElementById('hearts-container');
-        const symbols = ['❤️', '💕', '♥️', '💗', '💖', '💝', '💞', '💟'];
-        const count = Math.min(30, window.innerWidth / 20);
-        
+
+        if (!container) return;
+
+        const symbols = [
+            '❤️',
+            '💕',
+            '♥️',
+            '💗',
+            '💖',
+            '💝',
+            '💞',
+            '💟'
+        ];
+
+        const count = Math.min(30, Math.floor(window.innerWidth / 20));
+
         for (let i = 0; i < count; i++) {
             const heart = document.createElement('div');
+
             heart.className = 'heart';
-            heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            heart.textContent =
+                symbols[Math.floor(Math.random() * symbols.length)];
+
             heart.style.left = Math.random() * 100 + '%';
-            heart.style.fontSize = (0.8 + Math.random() * 1.4) + 'rem';
-            heart.style.animationDuration = (12 + Math.random() * 20) + 's';
-            heart.style.animationDelay = (Math.random() * 25) + 's';
+            heart.style.fontSize =
+                (0.8 + Math.random() * 1.4) + 'rem';
+
+            heart.style.animationDuration =
+                (12 + Math.random() * 20) + 's';
+
+            heart.style.animationDelay =
+                (Math.random() * 25) + 's';
+
             container.appendChild(heart);
         }
     }
 
     // ============================================================
-    // AUTH (for site password)
+    // AUTH
     // ============================================================
     function checkSiteAuth() {
         const stored = Utils.storage.get('siteAuth', false);
+
         if (stored === true) {
             isLoggedIn = true;
-            loginOverlay.classList.add('hidden');
-            adminBtn.style.display = 'inline-block';
+
+            if (loginOverlay) {
+                loginOverlay.classList.add('hidden');
+            }
+
+            if (adminBtn) {
+                adminBtn.style.display = 'inline-block';
+            }
+
             return true;
         }
+
         return false;
     }
 
     function siteLogin(password) {
         const data = window.AppData || AppData;
-        if (password === data.settings.sitePassword) {
+
+        if (
+            data &&
+            data.settings &&
+            password === data.settings.sitePassword
+        ) {
             isLoggedIn = true;
+
             Utils.storage.set('siteAuth', true);
-            loginOverlay.classList.add('hidden');
-            adminBtn.style.display = 'inline-block';
-            loginError.textContent = '';
-            loginPassword.value = '';
-            // Initialize admin if logged in
+
+            if (loginOverlay) {
+                loginOverlay.classList.add('hidden');
+            }
+
+            if (adminBtn) {
+                adminBtn.style.display = 'inline-block';
+            }
+
+            if (loginError) {
+                loginError.textContent = '';
+            }
+
+            if (loginPassword) {
+                loginPassword.value = '';
+            }
+
+            // Initialize admin
             if (window.AdminComponent) {
                 window.AdminComponent.init();
                 window.AdminComponent.initialized = true;
             }
+
             return true;
-        } else {
-            loginError.textContent = '❌ كلمة المرور غير صحيحة';
-            return false;
         }
+
+        if (loginError) {
+            loginError.textContent = '❌ كلمة المرور غير صحيحة';
+        }
+
+        return false;
     }
 
     // ============================================================
@@ -108,32 +161,40 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     function navigateTo(page) {
         currentPage = page;
-        
+
         // Hide all pages
         Object.keys(pages).forEach(key => {
             if (pages[key]) {
                 pages[key].classList.remove('active');
             }
         });
-        
+
         // Show target page
         if (pages[page]) {
             pages[page].classList.add('active');
         }
-        
-        // Update nav buttons - if admin, handle specially
+
+        // Update navigation
         if (page === 'admin') {
             navBtns.forEach(btn => {
                 btn.classList.remove('active');
             });
         } else {
             navBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.page === page);
+                btn.classList.toggle(
+                    'active',
+                    btn.dataset.page === page
+                );
             });
         }
-        
-        // Initialize component if not already
-        if (page === 'home' && window.HomeComponent) {
+
+        // ========================================================
+        // HOME
+        // ========================================================
+        if (
+            page === 'home' &&
+            window.HomeComponent
+        ) {
             if (!window.HomeComponent.initialized) {
                 window.HomeComponent.init();
                 window.HomeComponent.initialized = true;
@@ -144,8 +205,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.HomeComponent.updateMusic();
             }
         }
-        
-        if (page === 'memories' && window.MemoriesComponent) {
+
+        // ========================================================
+        // MEMORIES
+        // ========================================================
+        if (
+            page === 'memories' &&
+            window.MemoriesComponent
+        ) {
             if (!window.MemoriesComponent.initialized) {
                 window.MemoriesComponent.init();
                 window.MemoriesComponent.initialized = true;
@@ -154,8 +221,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.MemoriesComponent.bindEvents();
             }
         }
-        
-        if (page === 'messages' && window.MessagesComponent) {
+
+        // ========================================================
+        // MESSAGES
+        // ========================================================
+        if (
+            page === 'messages' &&
+            window.MessagesComponent
+        ) {
             if (!window.MessagesComponent.initialized) {
                 window.MessagesComponent.init();
                 window.MessagesComponent.initialized = true;
@@ -164,8 +237,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.MessagesComponent.bindEvents();
             }
         }
-        
-        if (page === 'chat' && window.ChatComponent) {
+
+        // ========================================================
+        // CHAT
+        // ========================================================
+        if (
+            page === 'chat' &&
+            window.ChatComponent
+        ) {
             if (!window.ChatComponent.initialized) {
                 window.ChatComponent.init();
                 window.ChatComponent.initialized = true;
@@ -174,8 +253,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.ChatComponent.bindEvents();
             }
         }
-        
-        if (page === 'admin' && window.AdminComponent) {
+
+        // ========================================================
+        // ADMIN
+        // ========================================================
+        if (
+            page === 'admin' &&
+            window.AdminComponent
+        ) {
             if (!window.AdminComponent.initialized) {
                 window.AdminComponent.init();
                 window.AdminComponent.initialized = true;
@@ -190,49 +275,62 @@ document.addEventListener('DOMContentLoaded', function() {
     // EVENTS
     // ============================================================
     function initEvents() {
-        // Nav buttons
+
+        // Navigation buttons
         navBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const page = this.dataset.page;
+
                 navigateTo(page);
             });
         });
 
         // Site login
-        loginBtn.addEventListener('click', () => {
-            siteLogin(loginPassword.value);
-        });
-        
-        loginPassword.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
                 siteLogin(loginPassword.value);
-            }
-        });
+            });
+        }
 
-        // Admin button - show admin page if logged in
-        adminBtn.addEventListener('click', () => {
-            if (isLoggedIn) {
-                navigateTo('admin');
-                navBtns.forEach(btn => {
-                    btn.classList.remove('active');
-                });
-            }
-        });
+        if (loginPassword) {
+            loginPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    siteLogin(loginPassword.value);
+                }
+            });
+        }
+
+        // Admin button
+        if (adminBtn) {
+            adminBtn.addEventListener('click', () => {
+                if (isLoggedIn) {
+                    navigateTo('admin');
+
+                    navBtns.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                }
+            });
+        }
 
         // Lightbox close
-        lightboxClose.addEventListener('click', () => {
-            lightbox.classList.remove('active');
-        });
-        
-        lightbox.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-            }
-        });
+        if (lightboxClose) {
+            lightboxClose.addEventListener('click', () => {
+                lightbox.classList.remove('active');
+            });
+        }
+
+        if (lightbox) {
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && lightbox) {
                 lightbox.classList.remove('active');
             }
         });
@@ -242,31 +340,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // INIT
     // ============================================================
     function init() {
+
         // Create floating hearts
         createHearts();
-        
+
         // Check site authentication
         checkSiteAuth();
-        
+
         // Initialize events
         initEvents();
-        
+
         // Initialize home page
         if (window.HomeComponent) {
             window.HomeComponent.init();
             window.HomeComponent.initialized = true;
         }
-        
+
         // Navigate to home
         navigateTo('home');
-        
+
         // Make admin available if logged in
-        if (isLoggedIn && window.AdminComponent) {
+        if (
+            isLoggedIn &&
+            window.AdminComponent
+        ) {
             window.AdminComponent.init();
             window.AdminComponent.initialized = true;
         }
     }
 
-    // Start the app
+    // ============================================================
+    // START APPLICATION
+    // ============================================================
     init();
 });
