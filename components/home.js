@@ -1,5 +1,5 @@
 // ============================================================
-// HOME PAGE COMPONENT - WITH SONG NAVIGATION
+// HOME PAGE COMPONENT - WITH ADVANCED PLAYER
 // ============================================================
 
 const HomeComponent = {
@@ -11,6 +11,8 @@ const HomeComponent = {
     soundCloudUrl: '',
     isPlaying: false,
     currentSongIndex: 0,
+    progressInterval: null,
+    _scMuted: false,
 
     // Initialize
     init: function() {
@@ -44,7 +46,16 @@ const HomeComponent = {
         this.audioElement = document.getElementById('homeAudio');
         const song = this.getCurrentSong();
 
-        if (!song) return;
+        if (!song) {
+            // Create empty audio element
+            if (!this.audioElement) {
+                this.audioElement = document.createElement('audio');
+                this.audioElement.id = 'homeAudio';
+                this.audioElement.preload = 'auto';
+                document.body.appendChild(this.audioElement);
+            }
+            return;
+        }
 
         if (this.isSoundCloudUrl(song.audioUrl)) {
             this.setupSoundCloud(song.audioUrl);
@@ -123,16 +134,19 @@ const HomeComponent = {
                 this.isPlaying = true;
                 const btn = document.getElementById('homePlayBtn');
                 if (btn) btn.textContent = '⏸️';
+                this.startProgressUpdate();
             });
             this.soundCloudWidget.bind(window.SC.Widget.Events.PAUSE, () => {
                 this.isPlaying = false;
                 const btn = document.getElementById('homePlayBtn');
                 if (btn) btn.textContent = '▶️';
+                this.stopProgressUpdate();
             });
             this.soundCloudWidget.bind(window.SC.Widget.Events.FINISH, () => {
                 this.isPlaying = false;
                 const btn = document.getElementById('homePlayBtn');
                 if (btn) btn.textContent = '▶️';
+                this.stopProgressUpdate();
                 // Auto play next song
                 this.nextSong();
             });
@@ -194,15 +208,25 @@ const HomeComponent = {
 
             <!-- Music Player -->
             <div class="music-player" id="homeMusic">
-                <img class="cover" id="homeMusicCover" src="${song.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E'}" alt="cover" />
-                <div class="info">
-                    <div class="song-name" id="homeSongName">${song.name || 'أغنية البداية'}</div>
-                    <div class="artist" id="homeArtist">${song.artist || 'ذكرياتنا'}</div>
-                    <div class="song-counter" style="font-size:0.6rem;color:var(--text-secondary);opacity:0.6;margin-top:2px;">
-                        ${totalSongs > 0 ? `${this.currentSongIndex + 1} / ${totalSongs}` : '0 / 0'}
+                <div style="display:flex;align-items:center;gap:12px;width:100%;">
+                    <img class="cover" id="homeMusicCover" src="${song.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E'}" alt="cover" />
+                    <div class="info">
+                        <div class="song-name" id="homeSongName">${song.name || 'أغنية البداية'}</div>
+                        <div class="artist" id="homeArtist">${song.artist || 'ذكرياتنا'}</div>
+                        <div class="song-counter">
+                            ${totalSongs > 0 ? `${this.currentSongIndex + 1} / ${totalSongs}` : '0 / 0'}
+                        </div>
                     </div>
                 </div>
-                <div class="controls" style="display:flex;gap:4px;align-items:center;">
+                
+                <!-- Progress Bar -->
+                <div class="progress-container" style="margin-top:8px;">
+                    <span class="time-current" id="musicCurrentTime">0:00</span>
+                    <input type="range" class="progress-bar" id="musicProgress" min="0" max="100" value="0" />
+                    <span class="time-duration" id="musicDuration">0:00</span>
+                </div>
+
+                <div class="controls" style="margin-top:6px;">
                     <button id="homePrevBtn" title="الأغنية السابقة" ${totalSongs <= 1 ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}>
                         <i class="fas fa-step-backward"></i>
                     </button>
@@ -223,9 +247,12 @@ const HomeComponent = {
                 ${this.renderTimelineItems()}
             </div>
         `;
+
+        // Update progress bar after render
+        setTimeout(() => this.updateProgress(), 100);
     },
 
-    // Render timeline items - WITHOUT TITLE
+    // Render timeline items
     renderTimelineItems: function() {
         const data = window.AppData || AppData;
         return data.timeline.map(item => `
@@ -276,6 +303,86 @@ const HomeComponent = {
     },
 
     // ============================================================
+    // PROGRESS BAR
+    // ============================================================
+    startProgressUpdate: function() {
+        this.stopProgressUpdate();
+        this.progressInterval = setInterval(() => {
+            this.updateProgress();
+        }, 500);
+    },
+
+    stopProgressUpdate: function() {
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+            this.progressInterval = null;
+        }
+    },
+
+    updateProgress: function() {
+        // For SoundCloud
+        if (this.soundCloudWidget && this.soundCloudReady) {
+            this.soundCloudWidget.getCurrentPosition((position) => {
+                if (position && position > 0) {
+                    this.soundCloudWidget.getDuration((duration) => {
+                        if (duration && duration > 0) {
+                            this.updateProgressUI(position / 1000, duration / 1000);
+                        }
+                    });
+                }
+            });
+            return;
+        }
+
+        // For HTML5 Audio
+        if (!this.audioElement) return;
+        
+        const progressBar = document.getElementById('musicProgress');
+        const currentTime = document.getElementById('musicCurrentTime');
+        const duration = document.getElementById('musicDuration');
+        
+        if (progressBar && this.audioElement.duration && this.audioElement.duration > 0) {
+            const progress = (this.audioElement.currentTime / this.audioElement.duration) * 100;
+            progressBar.value = progress;
+        }
+        
+        if (currentTime && this.audioElement.currentTime >= 0) {
+            const mins = Math.floor(this.audioElement.currentTime / 60);
+            const secs = Math.floor(this.audioElement.currentTime % 60);
+            currentTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        if (duration && this.audioElement.duration && this.audioElement.duration > 0) {
+            const mins = Math.floor(this.audioElement.duration / 60);
+            const secs = Math.floor(this.audioElement.duration % 60);
+            duration.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    },
+
+    updateProgressUI: function(currentSeconds, totalSeconds) {
+        const progressBar = document.getElementById('musicProgress');
+        const currentTime = document.getElementById('musicCurrentTime');
+        const duration = document.getElementById('musicDuration');
+        
+        if (progressBar && totalSeconds > 0) {
+            const progress = (currentSeconds / totalSeconds) * 100;
+            progressBar.value = Math.min(progress, 100);
+        }
+        
+        if (currentTime) {
+            const mins = Math.floor(currentSeconds / 60);
+            const secs = Math.floor(currentSeconds % 60);
+            currentTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        if (duration && totalSeconds > 0) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = Math.floor(totalSeconds % 60);
+            duration.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    },
+
+    // ============================================================
     // SONG NAVIGATION
     // ============================================================
     prevSong: function() {
@@ -284,7 +391,7 @@ const HomeComponent = {
         
         // Stop current playback
         if (this.isPlaying) {
-            this.toggleMusic(); // Pause
+            this.toggleMusic();
         }
         
         this.currentSongIndex--;
@@ -307,7 +414,7 @@ const HomeComponent = {
         
         // Stop current playback
         if (this.isPlaying) {
-            this.toggleMusic(); // Pause
+            this.toggleMusic();
         }
         
         this.currentSongIndex++;
@@ -338,12 +445,12 @@ const HomeComponent = {
     toggleMusic: function() {
         const song = this.getCurrentSong();
         if (!song) {
-            alert('⚠️ لا توجد أغاني. أضف أغاني في لوحة التحكم.');
+            Toast.warning('⚠️ لا توجد أغاني. أضف أغاني في لوحة التحكم.');
             return;
         }
 
         if (!song.audioUrl) {
-            alert('⚠️ لا يوجد رابط صوتي. أضف رابطاً في لوحة التحكم (قسم الأغاني)');
+            Toast.warning('⚠️ لا يوجد رابط صوتي. أضف رابطاً في لوحة التحكم (قسم الأغاني)');
             return;
         }
 
@@ -353,14 +460,16 @@ const HomeComponent = {
             }
 
             if (!this.soundCloudWidget) {
-                alert('⏳ جاري تجهيز مشغل SoundCloud، حاول مرة أخرى بعد لحظة.');
+                Toast.warning('⏳ جاري تجهيز مشغل SoundCloud، حاول مرة أخرى بعد لحظة.');
                 return;
             }
 
             if (this.isPlaying) {
                 this.soundCloudWidget.pause();
+                this.stopProgressUpdate();
             } else {
                 this.soundCloudWidget.play();
+                this.startProgressUpdate();
             }
             return;
         }
@@ -375,6 +484,7 @@ const HomeComponent = {
             this.isPlaying = false;
             const btn = document.getElementById('homePlayBtn');
             if (btn) btn.textContent = '▶️';
+            this.stopProgressUpdate();
             return;
         }
 
@@ -387,9 +497,10 @@ const HomeComponent = {
             this.isPlaying = true;
             const btn = document.getElementById('homePlayBtn');
             if (btn) btn.textContent = '⏸️';
+            this.startProgressUpdate();
         }).catch((e) => {
             console.warn('تشغيل الصوت فشل:', e);
-            alert('⚠️ لا يمكن تشغيل الصوت. تأكد من أن الرابط صحيح ومسموح تشغيله.');
+            Toast.error('⚠️ لا يمكن تشغيل الصوت. تأكد من أن الرابط صحيح ومسموح تشغيله.');
             this.isPlaying = false;
             const btn = document.getElementById('homePlayBtn');
             if (btn) btn.textContent = '▶️';
@@ -434,11 +545,21 @@ const HomeComponent = {
         const nameEl = document.getElementById('homeSongName');
         const artistEl = document.getElementById('homeArtist');
 
-        if (cover) cover.src = song.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E';
+        if (cover) {
+            cover.src = song.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E';
+            cover.alt = song.name || 'أغنية';
+        }
         if (nameEl) nameEl.textContent = song.name || 'أغنية البداية';
         if (artistEl) artistEl.textContent = song.artist || 'ذكرياتنا';
 
-        // Update counter
+        // Reset progress
+        const progressBar = document.getElementById('musicProgress');
+        const currentTime = document.getElementById('musicCurrentTime');
+        const duration = document.getElementById('musicDuration');
+        if (progressBar) progressBar.value = 0;
+        if (currentTime) currentTime.textContent = '0:00';
+        if (duration) duration.textContent = '0:00';
+
         this.updateSongCounter();
 
         if (this.isSoundCloudUrl(song.audioUrl)) {
@@ -451,9 +572,26 @@ const HomeComponent = {
             this.audioElement.src = song.audioUrl;
             this.audioElement.load();
         }
+
+        // Update prev/next buttons
+        const songs = this.getSongs();
+        const prevBtn = document.getElementById('homePrevBtn');
+        const nextBtn = document.getElementById('homeNextBtn');
+        if (prevBtn) {
+            prevBtn.disabled = songs.length <= 1;
+            prevBtn.style.opacity = songs.length <= 1 ? '0.3' : '1';
+            prevBtn.style.cursor = songs.length <= 1 ? 'not-allowed' : 'pointer';
+        }
+        if (nextBtn) {
+            nextBtn.disabled = songs.length <= 1;
+            nextBtn.style.opacity = songs.length <= 1 ? '0.3' : '1';
+            nextBtn.style.cursor = songs.length <= 1 ? 'not-allowed' : 'pointer';
+        }
     },
 
-    // Bind events
+    // ============================================================
+    // BIND EVENTS
+    // ============================================================
     bindEvents: function() {
         // Music play button
         const playBtn = document.getElementById('homePlayBtn');
@@ -479,6 +617,29 @@ const HomeComponent = {
             nextBtn.addEventListener('click', () => this.nextSong());
         }
 
+        // Progress bar seek
+        const progressBar = document.getElementById('musicProgress');
+        if (progressBar) {
+            progressBar.addEventListener('input', (e) => {
+                // For SoundCloud
+                if (this.soundCloudWidget && this.soundCloudReady) {
+                    this.soundCloudWidget.getDuration((duration) => {
+                        if (duration && duration > 0) {
+                            const seekTime = (e.target.value / 100) * duration;
+                            this.soundCloudWidget.seekTo(seekTime);
+                        }
+                    });
+                    return;
+                }
+
+                // For HTML5 Audio
+                if (this.audioElement && this.audioElement.duration) {
+                    const seekTime = (e.target.value / 100) * this.audioElement.duration;
+                    this.audioElement.currentTime = seekTime;
+                }
+            });
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -487,26 +648,38 @@ const HomeComponent = {
                 e.preventDefault();
                 this.toggleMusic();
             }
-            if (e.key === 'ArrowRight') {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                 e.preventDefault();
                 this.nextSong();
             }
-            if (e.key === 'ArrowLeft') {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 this.prevSong();
+            }
+            if (e.key === 'm' || e.key === 'M') {
+                this.toggleVolume();
             }
         });
     },
 
-    // Destroy
+    // ============================================================
+    // DESTROY
+    // ============================================================
     destroy: function() {
         if (this.counterInterval) {
             clearInterval(this.counterInterval);
             this.counterInterval = null;
         }
+        this.stopProgressUpdate();
         if (this.audioElement) {
             this.audioElement.pause();
             this.audioElement = null;
+        }
+        if (this.soundCloudWidget) {
+            try {
+                this.soundCloudWidget.pause();
+            } catch (e) {}
+            this.soundCloudWidget = null;
         }
     }
 };
