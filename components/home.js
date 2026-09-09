@@ -1,5 +1,5 @@
 // ============================================================
-// HOME PAGE COMPONENT - FIXED MUSIC PLAYER
+// HOME PAGE COMPONENT - WITH SONG NAVIGATION
 // ============================================================
 
 const HomeComponent = {
@@ -10,22 +10,41 @@ const HomeComponent = {
     soundCloudReady: false,
     soundCloudUrl: '',
     isPlaying: false,
+    currentSongIndex: 0,
 
     // Initialize
     init: function() {
         this.container = document.getElementById('page-home');
+        this.currentSongIndex = 0;
         this.render();
         this.startCounter();
         this.bindEvents();
         this.setupAudio();
     },
 
+    // Get current song
+    getCurrentSong: function() {
+        const data = window.AppData || AppData;
+        const songs = data.songs || [];
+        if (!songs.length) return null;
+        if (this.currentSongIndex >= songs.length) {
+            this.currentSongIndex = 0;
+        }
+        return songs[this.currentSongIndex];
+    },
+
+    // Get all songs
+    getSongs: function() {
+        const data = window.AppData || AppData;
+        return data.songs || [];
+    },
+
     // Setup audio element / SoundCloud widget
     setupAudio: function() {
         this.audioElement = document.getElementById('homeAudio');
+        const song = this.getCurrentSong();
 
-        const data = window.AppData || AppData;
-        const song = data.songs[0] || {};
+        if (!song) return;
 
         if (this.isSoundCloudUrl(song.audioUrl)) {
             this.setupSoundCloud(song.audioUrl);
@@ -45,6 +64,8 @@ const HomeComponent = {
             this.isPlaying = false;
             const playBtn = document.getElementById('homePlayBtn');
             if (playBtn) playBtn.textContent = '▶️';
+            // Auto play next song
+            this.nextSong();
         };
 
         this.audioElement.onerror = (e) => {
@@ -112,6 +133,8 @@ const HomeComponent = {
                 this.isPlaying = false;
                 const btn = document.getElementById('homePlayBtn');
                 if (btn) btn.textContent = '▶️';
+                // Auto play next song
+                this.nextSong();
             });
             this.soundCloudWidget.bind(window.SC.Widget.Events.READY, () => {
                 this.soundCloudReady = true;
@@ -130,7 +153,9 @@ const HomeComponent = {
     render: function() {
         const data = window.AppData || AppData;
         const settings = data.settings;
-        const song = data.songs[0] || {};
+        const song = this.getCurrentSong() || {};
+        const songs = this.getSongs();
+        const totalSongs = songs.length;
 
         this.container.innerHTML = `
             <!-- Hero -->
@@ -173,9 +198,18 @@ const HomeComponent = {
                 <div class="info">
                     <div class="song-name" id="homeSongName">${song.name || 'أغنية البداية'}</div>
                     <div class="artist" id="homeArtist">${song.artist || 'ذكرياتنا'}</div>
+                    <div class="song-counter" style="font-size:0.6rem;color:var(--text-secondary);opacity:0.6;margin-top:2px;">
+                        ${totalSongs > 0 ? `${this.currentSongIndex + 1} / ${totalSongs}` : '0 / 0'}
+                    </div>
                 </div>
-                <div class="controls">
+                <div class="controls" style="display:flex;gap:4px;align-items:center;">
+                    <button id="homePrevBtn" title="الأغنية السابقة" ${totalSongs <= 1 ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}>
+                        <i class="fas fa-step-backward"></i>
+                    </button>
                     <button class="play-btn" id="homePlayBtn">▶️</button>
+                    <button id="homeNextBtn" title="الأغنية التالية" ${totalSongs <= 1 ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}>
+                        <i class="fas fa-step-forward"></i>
+                    </button>
                     <button id="homeVolumeBtn" title="كتم الصوت">🔊</button>
                 </div>
             </div>
@@ -191,14 +225,13 @@ const HomeComponent = {
         `;
     },
 
-    // Render timeline items
+    // Render timeline items - WITHOUT TITLE
     renderTimelineItems: function() {
         const data = window.AppData || AppData;
         return data.timeline.map(item => `
             <div class="timeline-item">
                 <span class="tl-emoji">${item.emoji || '✨'}</span>
-                <span class="tl-title">${item.title}</span>
-                <div class="tl-desc">${item.description || ''}</div>
+                <span class="tl-title">${item.description || ''}</span>
             </div>
         `).join('');
     },
@@ -243,14 +276,74 @@ const HomeComponent = {
     },
 
     // ============================================================
-    // FIXED: MUSIC PLAYER
+    // SONG NAVIGATION
+    // ============================================================
+    prevSong: function() {
+        const songs = this.getSongs();
+        if (songs.length <= 1) return;
+        
+        // Stop current playback
+        if (this.isPlaying) {
+            this.toggleMusic(); // Pause
+        }
+        
+        this.currentSongIndex--;
+        if (this.currentSongIndex < 0) {
+            this.currentSongIndex = songs.length - 1;
+        }
+        
+        this.updateMusic();
+        this.updateSongCounter();
+        
+        // Auto play if was playing
+        if (this.isPlaying) {
+            this.toggleMusic();
+        }
+    },
+
+    nextSong: function() {
+        const songs = this.getSongs();
+        if (songs.length <= 1) return;
+        
+        // Stop current playback
+        if (this.isPlaying) {
+            this.toggleMusic(); // Pause
+        }
+        
+        this.currentSongIndex++;
+        if (this.currentSongIndex >= songs.length) {
+            this.currentSongIndex = 0;
+        }
+        
+        this.updateMusic();
+        this.updateSongCounter();
+        
+        // Auto play if was playing
+        if (this.isPlaying) {
+            this.toggleMusic();
+        }
+    },
+
+    updateSongCounter: function() {
+        const songs = this.getSongs();
+        const counter = document.querySelector('.song-counter');
+        if (counter) {
+            counter.textContent = songs.length > 0 ? `${this.currentSongIndex + 1} / ${songs.length}` : '0 / 0';
+        }
+    },
+
+    // ============================================================
+    // MUSIC PLAYER
     // ============================================================
     toggleMusic: function() {
-        const data = window.AppData || AppData;
-        const song = data.songs[0] || {};
+        const song = this.getCurrentSong();
+        if (!song) {
+            alert('⚠️ لا توجد أغاني. أضف أغاني في لوحة التحكم.');
+            return;
+        }
 
         if (!song.audioUrl) {
-            alert('⚠️ لا يوجد رابط صوتي. أضف رابطاً في لوحة التحكم (قسم الموسيقى)');
+            alert('⚠️ لا يوجد رابط صوتي. أضف رابطاً في لوحة التحكم (قسم الأغاني)');
             return;
         }
 
@@ -304,8 +397,8 @@ const HomeComponent = {
     },
 
     toggleVolume: function() {
-        const data = window.AppData || AppData;
-        const song = data.songs[0] || {};
+        const song = this.getCurrentSong();
+        if (!song) return;
 
         if (this.isSoundCloudUrl(song.audioUrl)) {
             if (!this.soundCloudWidget) {
@@ -334,8 +427,8 @@ const HomeComponent = {
 
     // Update music info when song changes
     updateMusic: function() {
-        const data = window.AppData || AppData;
-        const song = data.songs[0] || {};
+        const song = this.getCurrentSong();
+        if (!song) return;
 
         const cover = document.getElementById('homeMusicCover');
         const nameEl = document.getElementById('homeSongName');
@@ -344,6 +437,9 @@ const HomeComponent = {
         if (cover) cover.src = song.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E';
         if (nameEl) nameEl.textContent = song.name || 'أغنية البداية';
         if (artistEl) artistEl.textContent = song.artist || 'ذكرياتنا';
+
+        // Update counter
+        this.updateSongCounter();
 
         if (this.isSoundCloudUrl(song.audioUrl)) {
             this.setupSoundCloud(song.audioUrl);
@@ -371,11 +467,33 @@ const HomeComponent = {
             volumeBtn.addEventListener('click', () => this.toggleVolume());
         }
 
+        // Previous song button
+        const prevBtn = document.getElementById('homePrevBtn');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.prevSong());
+        }
+
+        // Next song button
+        const nextBtn = document.getElementById('homeNextBtn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextSong());
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            if (e.key === ' ') {
                 e.preventDefault();
                 this.toggleMusic();
+            }
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                this.nextSong();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                this.prevSong();
             }
         });
     },
