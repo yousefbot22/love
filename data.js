@@ -97,14 +97,6 @@ const AppData = {
             cover: 'https://imgs.search.brave.com/0uUOvn41jCZNvm7dY4Jd9Xy_jpLEXsfuQ0IiM6m-5HY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9U/LW1XR3NvLXk1RS9t/YXhyZXNkZWZhdWx0/LmpwZw',
             audioUrl: 'https://soundcloud.com/ramysabryfans/ramy-sabry-kelma?si=f72d68244a1a49279ff2ded1fe3481b0&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
             description: 'أغنية رائعة'
-        },
-        {
-            id: 4,
-            name: 'كل ما نقرب 🎵',
-            artist: 'تامر حسني',
-            cover: 'https://imgs.search.brave.com/qi2HHRYeMiQZhvR0_B5rgf_D-CFdFAGl6xHvclkwmFo/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS8v/T1p2N053S0d2NlEv/bWF4cmVzZGVmYXVs/dC5qcGc',
-            audioUrl: 'https://soundcloud.com/tamerhosnyofficial/kol-man2rb?si=2b8c5e8b3d74462ab1a7dbf43d3bbef4&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
-            description: 'أغنية جميلة جداً'
         }
     ],
 
