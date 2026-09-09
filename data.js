@@ -85,7 +85,7 @@ const AppData = {
             id: 2,
             name: 'خيبت توقعاتك',
             artist: 'حوده بندق',
-            cover: 'https://music.apple.com/vg/song/%D8%AE%D9%8A%D8%A8%D8%AA-%D8%AA%D9%88%D9%82%D8%B9%D8%A7%D8%AA%D9%83/1861424327',
+            cover: 'https://imgs.search.brave.com/r7Xz4ajqas2mfjMItkGPOJRpy2dCgmNEq_2WQvJihCY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9w/SGY1b2tSTTlNay9t/YXhyZXNkZWZhdWx0/LmpwZw',
             audioUrl: 'https://soundcloud.com/eslamhussein2006e/houda-khayebt-tawq3atk-1?si=1f5d6c4a69a5453ca64cf42e573e84ce&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
             description: '.....'
         },
@@ -93,7 +93,7 @@ const AppData = {
             id: 3,
             name: 'كلمه 🎵',
             artist: 'رامي صبري',
-            cover: 'https://t2.genius.com/unsafe/430x430/https%3A%2F%2Fimages.genius.com%2Fe8e02960f354c3f877f7e51b4f455f80.1000x1000x1.png',
+            cover: 'https://imgs.search.brave.com/0uUOvn41jCZNvm7dY4Jd9Xy_jpLEXsfuQ0IiM6m-5HY/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnl0/aW1nLmNvbS92aS9U/LW1XR3NvLXk1RS9t/YXhyZXNkZWZhdWx0/LmpwZw',
             audioUrl: 'https://soundcloud.com/ramysabryfans/ramy-sabry-kelma?si=f72d68244a1a49279ff2ded1fe3481b0&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
             description: '.....'
         } ],
