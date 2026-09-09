@@ -1,5 +1,5 @@
 // ============================================================
-// MESSAGES PAGE COMPONENT
+// MESSAGES PAGE COMPONENT - FIXED (removed date)
 // ============================================================
 
 const MessagesComponent = {
@@ -45,7 +45,6 @@ const MessagesComponent = {
                         }
                         <div class="card-body">
                             <div class="card-title">${m.emoji || '💌'} ${m.title}</div>
-                            <div class="card-date">${Utils.formatDate(m.date)}</div>
                         </div>
                     </div>
                 `).join('')}
@@ -69,7 +68,7 @@ const MessagesComponent = {
                 document.getElementById('lbImg').src = msg.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E💌%3C/text%3E%3C/svg%3E';
                 document.getElementById('lbTitle').textContent = `${msg.emoji || '💌'} ${msg.title}`;
                 document.getElementById('lbDesc').textContent = msg.content || '';
-                document.getElementById('lbDate').textContent = Utils.formatDate(msg.date);
+                document.getElementById('lbDate').textContent = '';
                 document.getElementById('lightbox').classList.add('active');
 
                 // Hide navigation for messages
