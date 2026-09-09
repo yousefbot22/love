@@ -109,6 +109,7 @@ const MemoriesComponent = {
         document.getElementById('lbImg').src = item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E❤️%3C/text%3E%3C/svg%3E';
         document.getElementById('lbTitle').textContent = `${item.emoji || '❤️'}
         document.getElementById('lbDesc').textContent = item.description || '';
+        document.getElementById('lbDate').textContent = Utils.formatDate(item.date);
     }
 };
 
