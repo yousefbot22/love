@@ -74,13 +74,13 @@ const defaultData = {
         id: 1,
         name: 'قصر بعيد 🎵',
         artist: 'تامر عاشور',
-        cover: 'https://www.matb3aa.com/song/%D8%A7%D8%BA%D9%86%D9%8A%D8%A9-%D9%82%D8%B5%D8%B1-%D8%A8%D8%B9%D9%8A%D8%AF',
+        cover: 'https://t2.genius.com/unsafe/430x430/https%3A%2F%2Fimages.genius.com%2Fe8e02960f354c3f877f7e51b4f455f80.1000x1000x1.png',
         audioUrl: 'https://serv100.albumaty.com/2024/Albumaty.Com_tamr_aashwr_ksr_bayd.mp3',
         description: 'أول أغنية في قائمتنا'
     }, {
         id: 2,
-        name: 'أغنية الحب',
-        artist: 'ذكرياتنا',
+        name: 'خيبت توقعاتك',
+        artist: 'حوده بندق',
         cover: 'https://music.apple.com/vg/song/%D8%AE%D9%8A%D8%A8%D8%AA-%D8%AA%D9%88%D9%82%D8%B9%D8%A7%D8%AA%D9%83/1861424327',
         audioUrl: 'https://soundcloud.com/eslamhussein2006e/houda-khayebt-tawq3atk-1?si=1f5d6c4a69a5453ca64cf42e573e84ce&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
         description: '.....'
