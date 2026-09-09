@@ -1,5 +1,5 @@
 // ============================================================
-// MEMORIES PAGE COMPONENT
+// MEMORIES PAGE COMPONENT - WITHOUT TITLE
 // ============================================================
 
 const MemoriesComponent = {
@@ -41,9 +41,9 @@ const MemoriesComponent = {
             <div class="cards-grid" id="memoriesGrid">
                 ${memories.map((m, i) => `
                     <div class="card-item" data-index="${i}">
-                        <img class="card-img" src="${m.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E❤️%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy" />
+                        <img class="card-img" src="${m.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E❤️%3C/text%3E%3C/svg%3E'}" alt="${m.description || 'ذكرى'}" loading="lazy" />
                         <div class="card-body">
-                            <div class="card-title">${m.emoji || '❤️'} ${m.title}</div>
+                            <div class="card-title">${m.emoji || '❤️'} ${m.description || 'ذكرى'}</div>
                         </div>
                     </div>
                 `).join('')}
@@ -106,8 +106,8 @@ const MemoriesComponent = {
         if (!item) return;
 
         document.getElementById('lbImg').src = item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E❤️%3C/text%3E%3C/svg%3E'; 
-        document.getElementById('lbTitle').textContent = `${item.emoji || '❤️'} ${item.title}`; 
-        document.getElementById('lbDesc').textContent = item.description || ''; 
+        document.getElementById('lbTitle').textContent = `${item.emoji || '❤️'} ${item.description || 'ذكرى'}`; 
+        document.getElementById('lbDesc').textContent = ''; 
         document.getElementById('lbDate').textContent = ''; 
     } 
 }; 
