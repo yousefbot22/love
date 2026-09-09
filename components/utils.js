@@ -10,18 +10,28 @@ const Utils = {
 
     // Format date
     formatDate: function(date) {
-        const d = new Date(date);
-        return d.toLocaleDateString('ar-EG', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
+        if (!date) return '';
+        try {
+            const d = new Date(date);
+            return d.toLocaleDateString('ar-EG', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        } catch (e) {
+            return date;
+        }
     },
 
     // Format date for input
     formatDateInput: function(date) {
-        const d = new Date(date);
-        return d.toISOString().split('T')[0];
+        if (!date) return '';
+        try {
+            const d = new Date(date);
+            return d.toISOString().split('T')[0];
+        } catch (e) {
+            return '';
+        }
     },
 
     // Debounce
@@ -39,6 +49,7 @@ const Utils = {
 
     // Escape HTML
     escapeHtml: function(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -46,8 +57,31 @@ const Utils = {
 
     // Truncate text
     truncate: function(text, maxLength = 100) {
+        if (!text) return '';
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';
+    },
+
+    // Sanitize input (XSS protection)
+    sanitize: function(input) {
+        if (typeof input !== 'string') return input;
+        return input
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    },
+
+    // Validate URL
+    validateUrl: function(url) {
+        try {
+            const u = new URL(url);
+            return ['http:', 'https:'].includes(u.protocol);
+        } catch {
+            return false;
+        }
     },
 
     // Get emoji from text
@@ -62,8 +96,10 @@ const Utils = {
         set: function(key, value) {
             try {
                 localStorage.setItem(key, JSON.stringify(value));
+                return true;
             } catch (e) {
                 console.warn('Storage set error:', e);
+                return false;
             }
         },
         get: function(key, defaultValue = null) {
