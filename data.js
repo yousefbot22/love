@@ -16,57 +16,48 @@ const defaultData = {
     // Memories
     memories: [{
         id: 1,
-        title: 'أول لقاء',
-        description: 'اليوم الذي تغير فيه كل شيء',
-        date: '2026-09-04',
+        description: 'كل يوم بحبك عن الاول وهفضل احبك اكتر من الاول انتي روحي وكل ما املك🥹💕',
         emoji: '💕',
         image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/357825132921254292.jpg'
     }, {
         id: 2,
-        title: 'أول رسالة',
-        description: 'رجعنا لبعض تاني',
-        date: '2026-09-02',
+        description: 'ستظلي يا ملكتي انتي الوحيده المحتله قلبي يا اغلي ما اتمناة🥹🎀',
         emoji: '💌',
-        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/42221315255560697.jpg'
+        image: 'https://jauctjraovneadlnsunr.supabase.co/storage/v1/object/public/love-media/image/1780088987534-fe8466ab3d3c0e1baeda9c7842c03020.jpg'
     }, {
         id: 3,
-        title: 'أجمل يوم',
-        description: 'ضحكتك تغير الدنيا',
-        date: '2026-09-05',
+        description: 'ساظل احبك الي ان نخلد سويا في الجنة🥹💕',
         emoji: '🌹',
         image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/49821139622015014.jpg'
-    }],
+    },{
+        id: 3,
+        description: 'ربما انتي لستي الحب الاول لكنك كل عوضي وكل ما اتمناه الان🥹❤️‍🩹',
+        emoji: '🌹',
+        image: 'https://jauctjraovneadlnsunr.supabase.co/storage/v1/object/public/love-media/image/1780089000818-7aa5ce5537ced6ade94aab79a7cb589d.jpg'
+    }
+              ],
 
     // Messages
     messages: [{
         id: 1,
-        title: 'صباح الخير ينور عيني',
         content: 'صباح الخير يا أجمل شخص في الكون. كل يوم معاك هو هدية.',
-        date: 'للابد',
         emoji: '🌅',
-        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/49821139622015014.jpg'
+        image: 'https://jauctjraovneadlnsunr.supabase.co/storage/v1/object/public/love-media/image/1780088791099-75ac663b0e3b54a44c73713775dc60ee.jpg'
     }, {
         id: 2,
-        title: 'حبي لك',
         content: 'أنت كل شيء بالنسبة لي. لا أتخيل حياتي بدونك.',
-        date: 'للابد',
         emoji: '❤️',
-        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/42221315255560697.jpg'
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/854276624268880704.jpg'
     }, {
         id: 3,
-        title: 'أمنية',
-        content: 'أتمنى أن نبقى معًا إلى الأبد. أنت نصفي الآخر.',
-        date: 'للابد',
+        content: 'هفضل احبك وجمبك لاخر العمر🥹💕',
         emoji: '✨',
-        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/357825132921254292.jpg'
+        image: 'https://jauctjraovneadlnsunr.supabase.co/storage/v1/object/public/love-media/image/1780088974170-69654e85cfa7b948b95cc22464ad26db.jpg'
     }],
 
     // Timeline
     timeline: [
-        { emoji: '❤️', title: 'البداية', description: 'بدأت قصتنا الجميلة' },
-        { emoji: '💌', title: 'أول رسالة', description: 'كلمات من القلب' },
-        { emoji: '🌹', title: 'أجمل لحظة', description: 'يوم لا يُنسى' },
-        { emoji: '✨', title: 'ذكرياتنا الحالية', description: 'كل يوم هو قصة جديدة' }
+        { emoji: '❤️', description: 'هفضل احبك وجمبك لاخر العمر🥹💕' },
     ],
 
     // Songs
