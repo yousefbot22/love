@@ -9,9 +9,9 @@ const ChatComponent = {
     isProcessing: false,
     currentMessage: '',
     
-    // API Configuration
+    // API Configuration - استخدم الرابط الصحيح للـ API
     API_KEY: 'AQ.Ab8RN6If04QzOrJs0ET-hybh2QmKs_LXOqfX-8oHHvJlW71syQ',
-    API_URL: 'https://api.aichat.com/v1/chat', // استخدم الرابط الصحيح
+    API_URL: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', // <- غيّر هذا للرابط الصحيح
 
     // ============================================================
     // LOCAL RESPONSES (fallback when API fails)
@@ -113,7 +113,7 @@ const ChatComponent = {
             <div class="msg ${msg.role === 'user' ? 'user' : 'ai'}">
                 ${msg.role === 'ai' ? `<span style="margin-left:6px;">${settings.avatar || '❤️'}</span>` : ''}
                 ${msg.text}
-                ${msg.role === 'ai' ? `<span style="font-size:0.5rem;color:var(--text-secondary);opacity:0.5;margin-right:8px;">${msg.source === 'api' ? '🤖 AI' : '💭'}</span>` : ''}
+                ${msg.role === 'ai' && msg.source ? `<span style="font-size:0.5rem;color:var(--text-secondary);opacity:0.5;margin-right:8px;">${msg.source === 'api' ? '🤖 AI' : '💭'}</span>` : ''}
             </div>
         `).join('');
     },
@@ -128,11 +128,9 @@ const ChatComponent = {
         text = text.trim();
         this.currentMessage = text;
 
-        // Add user message
         this.chatHistory.push({ role: 'user', text: text });
         this.updateMessages();
 
-        // Show typing
         this.showTyping();
         this.isProcessing = true;
 
@@ -151,7 +149,6 @@ const ChatComponent = {
             .catch(error => {
                 console.warn('API error, using local response:', error);
                 this.hideTyping();
-                // Fallback to local response
                 const fallback = this.getLocalResponse(text);
                 this.chatHistory.push({ 
                     role: 'ai', 
@@ -170,10 +167,7 @@ const ChatComponent = {
     sendToAPI: function(text) {
         return new Promise((resolve, reject) => {
             const data = window.AppData || AppData;
-            const context = this.chatHistory.slice(-6).map(m => 
-                `${m.role === 'user' ? 'المستخدم' : 'المساعد'}: ${m.text}`
-            ).join('\n');
-
+            
             const payload = {
                 messages: [
                     { role: 'system', content: data.chatSettings.systemPrompt || 'أنت مساعد لطيف ومتفهم تتحدث بالعربية.' },
@@ -188,7 +182,6 @@ const ChatComponent = {
                 stream: false
             };
 
-            // Use fetch to call API
             fetch(this.API_URL, {
                 method: 'POST',
                 headers: {
