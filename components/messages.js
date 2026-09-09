@@ -1,18 +1,16 @@
 // ============================================================
-// MESSAGES PAGE COMPONENT - FIXED (removed date)
+// MESSAGES PAGE COMPONENT - FINAL FIX
 // ============================================================
 
 const MessagesComponent = {
     container: null,
 
-    // Initialize
     init: function() {
         this.container = document.getElementById('page-messages');
         this.render();
         this.bindEvents();
     },
 
-    // Render
     render: function() {
         const data = window.AppData || AppData;
         const messages = data.messages || [];
@@ -40,11 +38,11 @@ const MessagesComponent = {
                 ${messages.map((m, i) => `
                     <div class="card-item" data-index="${i}">
                         ${m.image ? 
-                            `<img class="card-img" src="${m.image}" alt="${m.title}" loading="lazy" />` :
+                            `<img class="card-img" src="${m.image}" alt="${m.content || 'رسالة'}" loading="lazy" />` :
                             `<div class="card-img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg-secondary);">${m.emoji || '💌'}</div>`
                         }
                         <div class="card-body">
-                            <div class="card-title">${m.emoji || '💌'} ${m.title}</div>
+                            <div class="card-title">${m.emoji || '💌'} ${m.content || 'رسالة'}</div>
                         </div>
                     </div>
                 `).join('')}
@@ -52,7 +50,6 @@ const MessagesComponent = {
         `;
     },
 
-    // Bind events
     bindEvents: function() {
         const grid = document.getElementById('messagesGrid');
         if (!grid) return;
@@ -64,22 +61,30 @@ const MessagesComponent = {
                 const msg = data.messages[index];
                 if (!msg) return;
 
-                // Show message in lightbox
-                document.getElementById('lbImg').src = msg.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E💌%3C/text%3E%3C/svg%3E';
-                document.getElementById('lbTitle').textContent = `${msg.emoji || '💌'} ${msg.title}`;
-                document.getElementById('lbDesc').textContent = msg.content || '';
-                document.getElementById('lbDate').textContent = '';
-                document.getElementById('lightbox').classList.add('active');
+                const lbImg = document.getElementById('lbImg');
+                const lbTitle = document.getElementById('lbTitle');
+                const lbDesc = document.getElementById('lbDesc');
+                const lbDate = document.getElementById('lbDate');
+                const lightbox = document.getElementById('lightbox');
 
-                // Hide navigation for messages
-                document.getElementById('lbPrev').style.display = 'none';
-                document.getElementById('lbNext').style.display = 'none';
+                if (lbImg) lbImg.src = msg.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E💌%3C/text%3E%3C/svg%3E';
+                if (lbTitle) lbTitle.textContent = `${msg.emoji || '💌'} ${msg.content || 'رسالة'}`;
+                if (lbDesc) lbDesc.textContent = msg.content || '';
+                if (lbDate) {
+                    lbDate.textContent = '';
+                    lbDate.style.display = 'none';
+                }
+                if (lightbox) lightbox.classList.add('active');
+
+                const prevBtn = document.getElementById('lbPrev');
+                const nextBtn = document.getElementById('lbNext');
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
             });
         });
     }
 };
 
-// Export
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = MessagesComponent;
 }
