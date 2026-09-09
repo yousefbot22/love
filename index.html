@@ -5,16 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>ذكرياتنا ❤️</title>
     
+    <meta name="description" content="ذكرياتنا - موقع خاص للذكريات الجميلة والحب ❤️" />
+    <meta property="og:title" content="ذكرياتنا ❤️" />
+    <meta property="og:description" content="كل لحظة معك ذكرى جميلة" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ff4d6d" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" />
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+    <!-- ===== PARTICLES BACKGROUND ===== -->
+    <div id="particles-bg"></div>
+
     <!-- ===== FLOATING HEARTS ===== -->
     <div id="hearts-container"></div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container"></div>
 
     <!-- ===== LOGIN OVERLAY ===== -->
     <div class="login-overlay" id="loginOverlay">
@@ -35,11 +48,11 @@
         <header class="app-header" id="appHeader">
             <div class="logo">ذكرياتنا ❤️</div>
             <div class="header-actions">
-                <button id="adminBtn" style="display:none;" title="لوحة التحكم">
-                    <i class="fas fa-cog"></i>
-                </button>
                 <button id="themeBtn" title="تبديل الثيم">
                     <i class="fas fa-moon"></i>
+                </button>
+                <button id="adminBtn" style="display:none;" title="لوحة التحكم">
+                    <i class="fas fa-cog"></i>
                 </button>
             </div>
         </header>
@@ -91,10 +104,12 @@
     </div>
 
     <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
     <script src="data.js"></script>
     <script src="components/utils.js"></script>
+    <script src="components/toast.js"></script>
     <script src="components/header.js"></script>
-    <script src="https://w.soundcloud.com/player/api.js"></script>
     <script src="components/home.js"></script>
     <script src="components/memories.js"></script>
     <script src="components/messages.js"></script>
