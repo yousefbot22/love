@@ -20,51 +20,50 @@ const defaultData = {
         description: 'اليوم الذي تغير فيه كل شيء',
         date: '2026-09-04',
         emoji: '💕',
-        image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E💕%3C/text%3E%3C/svg%3E'
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/357825132921254292.jpg'
     }, {
         id: 2,
         title: 'أول رسالة',
         description: 'رجعنا لبعض تاني',
         date: '2026-09-02',
         emoji: '💌',
-        image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E💌%3C/text%3E%3C/svg%3E'
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/42221315255560697.jpg'
     }, {
         id: 3,
         title: 'أجمل يوم',
         description: 'ضحكتك تغير الدنيا',
         date: '2026-09-05',
         emoji: '🌹',
-        image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%231a1015"/%3E%3Ctext x="100" y="115" font-size="70" text-anchor="middle" fill="%23d4a0a0"%3E🌹%3C/text%3E%3C/svg%3E'
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/49821139622015014.jpg'
     }],
 
     // Messages
     messages: [{
         id: 1,
-        title: 'رسالة الصباح',
-        content: 'صباح الخير يا أجمل شخص في الكون. كل يوم معك هو هدية.',
-        date: '2026-09-06',
+        title: 'صباح الخير ينور عيني',
+        content: 'صباح الخير يا أجمل شخص في الكون. كل يوم معاك هو هدية.',
+        date: 'للابد',
         emoji: '🌅',
-        image: ''
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/49821139622015014.jpg'
     }, {
         id: 2,
         title: 'حبي لك',
         content: 'أنت كل شيء بالنسبة لي. لا أتخيل حياتي بدونك.',
-        date: '2026-09-06',
+        date: 'للابد',
         emoji: '❤️',
-        image: ''
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/42221315255560697.jpg'
     }, {
         id: 3,
         title: 'أمنية',
         content: 'أتمنى أن نبقى معًا إلى الأبد. أنت نصفي الآخر.',
-        date: '2026-09-06',
+        date: 'للابد',
         emoji: '✨',
-        image: ''
+        image: 'https://krvfsszbffhilxeaqhlc.supabase.co/storage/v1/object/public/memories/357825132921254292.jpg'
     }],
 
     // Timeline
     timeline: [
         { emoji: '❤️', title: 'البداية', description: 'بدأت قصتنا الجميلة' },
-        { emoji: '📸', title: 'أول ذكرى', description: 'أول صورة معًا' },
         { emoji: '💌', title: 'أول رسالة', description: 'كلمات من القلب' },
         { emoji: '🌹', title: 'أجمل لحظة', description: 'يوم لا يُنسى' },
         { emoji: '✨', title: 'ذكرياتنا الحالية', description: 'كل يوم هو قصة جديدة' }
@@ -73,18 +72,18 @@ const defaultData = {
     // Songs
     songs: [{
         id: 1,
-        name: 'أغنية البداية 🎵',
-        artist: 'SoundCloud • ذكرياتنا',
-        cover: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E🎵%3C/text%3E%3C/svg%3E',
-        audioUrl: 'https://soundcloud.com/ali-h-al-rubaie-2694222/qm6zdhsvigjl',
+        name: 'قصر بعيد 🎵',
+        artist: 'تامر عاشور',
+        cover: 'https://www.matb3aa.com/song/%D8%A7%D8%BA%D9%86%D9%8A%D8%A9-%D9%82%D8%B5%D8%B1-%D8%A8%D8%B9%D9%8A%D8%AF',
+        audioUrl: 'https://serv100.albumaty.com/2024/Albumaty.Com_tamr_aashwr_ksr_bayd.mp3',
         description: 'أول أغنية في قائمتنا'
     }, {
         id: 2,
         name: 'أغنية الحب',
         artist: 'ذكرياتنا',
-        cover: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%231a1015"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23d4a0a0"%3E💕%3C/text%3E%3C/svg%3E',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-        description: 'أغنية تعبر عن الحب'
+        cover: 'https://music.apple.com/vg/song/%D8%AE%D9%8A%D8%A8%D8%AA-%D8%AA%D9%88%D9%82%D8%B9%D8%A7%D8%AA%D9%83/1861424327',
+        audioUrl: 'https://soundcloud.com/eslamhussein2006e/houda-khayebt-tawq3atk-1?si=1f5d6c4a69a5453ca64cf42e573e84ce&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing',
+        description: '.....'
     }],
 
     // Chat Settings
@@ -92,7 +91,7 @@ const defaultData = {
         name: 'ذكرياتنا AI',
         avatar: '❤️',
         welcome: 'أهلًا ❤️ أنا هنا لأسمعك وأتحدث معك. أخبرني كيف تشعر اليوم؟',
-        systemPrompt: 'أنت مساعد رومانسي ولطيف، تتحدث باللهجة العربية. أنت صديق حنون ومتفهم وتحب الاستماع.',
+        systemPrompt: 'أنت مساعد رومانسي ولطيف، تتحدث باللهجة العربية. أنت ابن اسمك محمد حنون ومتفهم وتحب الاستماع.',
         language: 'ar'
     }
 };
