@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Initialize components
         const components = {
             home: HomeComponent,
             memories: MemoriesComponent,
@@ -224,14 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // EVENTS
     // ============================================================
     function initEvents() {
-        // Navigation
         navBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 navigateTo(this.dataset.page);
             });
         });
 
-        // Login
         if (loginBtn) {
             loginBtn.addEventListener('click', () => {
                 siteLogin(loginPassword.value);
@@ -243,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Admin button
         if (adminBtn) {
             adminBtn.addEventListener('click', () => {
                 if (isLoggedIn) {
@@ -253,12 +249,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Theme
         if (themeBtn) {
             themeBtn.addEventListener('click', toggleTheme);
         }
 
-        // Lightbox
         if (lightboxClose) {
             lightboxClose.addEventListener('click', () => {
                 lightbox.classList.remove('active');
@@ -270,14 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && lightbox) {
                 lightbox.classList.remove('active');
             }
         });
 
-        // Extend session on activity
         ['click', 'keydown', 'scroll', 'touchstart'].forEach(event => {
             document.addEventListener(event, extendSession);
         });
@@ -305,9 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
             window.AdminComponent.initialized = true;
         }
 
-        // Welcome toast
         setTimeout(() => {
-            Toast.success('💕 متزعليش زعلك عندي بالدنيا');
+            Toast.success('💕 مرحباً بك في ذكرياتنا!');
         }, 1000);
     }
 
